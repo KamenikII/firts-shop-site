@@ -11,8 +11,8 @@ const basketTotalValue = document.querySelector('.basketTotalValue')
 /**
  * Функция, которая скрывает/показывает корзину
  */
-openBasketBtn.addEventListener('click', function(){
-    basket.classList.toggle('hidden')
+openBasketBtn.addEventListener('click', function () {
+    basketEl.classList.toggle('hidden')
 })
 
 /**
@@ -20,6 +20,11 @@ openBasketBtn.addEventListener('click', function(){
  * Ключ - это ID продукта, значение - это кол-во товаров в корзине
  */
 let basket = {}
+
+/**
+ * Функция, добавляет продукт в basket
+ * @param {number} productID
+ */
 function addProductToObject(productID) {
     if (!(productID in basket)) basket[productID] = 1
     else basket[productID]++
@@ -29,10 +34,11 @@ function addProductToObject(productID) {
  * Функция, срабатывает, когда нужно отрисовать продукт в корзине
  * @param {number} productID
  */
-function renderProductsInBasket(){
-    let productExist = document.querySelector(`productCount[data-productID="${productID}"]`)
+function renderProductsInBasket(productID){
+    let productExist = document.querySelector(`.productCount[data-productID="${productID}"]`)
     if (productExist) {
-        // Перещёт стоимости, добавление
+        increaseProductCount(productID);
+        recalculateSumForProduct(productID);
     }
     else {
         renderNewProductInBasket(productID)
@@ -41,8 +47,9 @@ function renderProductsInBasket(){
 
 /**
  * Функция рэндера корзины
+ * @param {number} productID
  */
-function renderNewProductInBasket() {
+function renderNewProductInBasket(productID) {
     let productRow = `
         <div class="basketRow basketHeader">
             <div>${products[productID].name}</div>
@@ -51,23 +58,56 @@ function renderNewProductInBasket() {
             </div>
             <div>${products[productID].price}</div>
             <div>
-                $<span class="ProductTotalRow" data-productID="${productID}> ${products[productID].price}</span>
+                $<span class="ProductTotalRow" data-productID="${productID}">${products[productID].price}</span>
             </div>
-        </div>
-
-        <div class="basketTotal">
-            Total:
-            $<span class="basketTotalValue">0</span>
         </div>
     `
     basketTotal.insertAdjacentHTML('beforebegin', productRow)
 }
 
+/**
+ * увеличивает количество товаров в корзине
+ * @param {number} productID 
+ */
+function increaseProductCount(productID) {
+    const productCountEl = document.querySelector(
+        `.productCount[data-productID="${productID}"]`
+    )
+    productCountEl.textContent++
+}
+
+/**
+ * Функция, пересчитывающая стоимость товара, учитывая его количество
+ * @param {number} productID 
+ */
+function recalculateSumForProduct(productID) {
+    const productTotalRowEl = document.querySelector(
+        `.ProductTotalRow[data-productID="${productID}"]`
+    )
+    let totalPriceForRow = (basket[productID] * products[productID].price).toFixed(2)
+    productTotalRowEl.textContent = totalPriceForRow
+}
+
+/**
+ * Функция, пересчитывающая общую сумму товаров в корзине
+ */
+function calculateAndRenderTotalBasketSum() {
+    let summ = 0
+    for (let productID in basket) summ += basket[productID] * products[productID].price
+    basketTotalValue.textContent = summ.toFixed(2)
+}
+
+/**
+ * Увеличение счётчика товара
+ */
+function increaseProductsCount() {
+    basketCounter.textContent++
+}
 
 
-
-
-function addProductIntoBasket(productId) {
-    addProductToObject(productId)
-    renderNewProductInBasket(productId)
+function addProductIntoBasket(productID) {
+    increaseProductsCount()
+    addProductToObject(productID)
+    renderProductsInBasket(productID)
+    calculateAndRenderTotalBasketSum()
 }

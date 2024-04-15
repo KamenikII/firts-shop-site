@@ -12,7 +12,7 @@ const featuredItemsEl = document.querySelector('.featuredItems');
 function createFeaturedItem(product) {
     return `<section class="featuredItem">
         <div class="featuredImgWrap">
-            <img src="${pathToImages}/${product.image}" alt="${product.name}">
+            <img src="${pathToFeatures}/${product.image}" alt="${product.name}">
             <div class="featuredImgDark">
                 <button data-productID="${product.id}">
                     <img src="${pathToImages}/cart.svg" alt="icon">
@@ -47,7 +47,7 @@ function insertFeaturedItems(products, featuredItems) {
  * Функция, добавляет товар к корзину
  */
 function setOnClickListenerAddToCard() {
-    const addToBasketBtns = document.querySelectorAll('button [data-productID]');
+    const addToBasketBtns = document.querySelectorAll('button[data-productID]');
     addToBasketBtns.forEach(function(button){
         button.addEventListener('click', addProductHeandler);
     })
